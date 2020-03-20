@@ -1,76 +1,34 @@
-// Import stylesheets
+import { DomainEvents } from "./EventSystem/DomainEvents";
+import { DomainEvent } from "./EventSystem/IDomainEvent";
+import { NotificationHandler } from "./EventSystem/NotificationHandler";
 
-
-import './style.css';
-import { IDomainEvent } from './mediatZ/IDomainEvent';
-import { IDomainEventHandler } from './mediatZ/IDomainEventHandler';
-import { MediatZ } from './mediatZ/MediatZ';
-import { INotificationHandler } from './mediatZ/INotificationHandler';
-
-function IDomainNotificationHandler
-(event: IDomainEvent) {
-
- type Constructor<T> = {
-    new(...args: any[]): T;
-    readonly prototype: T;
-  }
-
-  return function<T extends Constructor<IDomainEventHandler<IDomainEvent>>>(target : T) {
-     MediatZ.register(event.name, new target);
-  }
- 
+@DomainEvent
+class Event1 {
+  name: string = "John";
+  message: string = "Hey there";
 }
 
-class DomainEvent implements IDomainEvent {
-  name = "hello";
-  message = "world";
+@DomainEvent
+class Event2 {
+  name: string = "Jenny";
+  message: string = "Hey there";
 }
 
-class DomainEvent2 implements IDomainEvent {
-  name = "yes";
-  message = "hii";
-}
-
-@IDomainNotificationHandler(DomainEvent)
+@NotificationHandler(Event1)
 class EventHandler {
-
- Handle(domainEvent : DomainEvent): Promise<void> {
-   console.log(domainEvent.message);
-   return null;
- }
-
-}
-
-@IDomainNotificationHandler(DomainEvent2)
-class EventHandler2 {
-
- Handle(domainEvent : DomainEvent): Promise<void> {
-   console.log(domainEvent.message);
-   return null;
- }
-
-}
-
-/*export class EventHandler1 implements IDomainEventHandler<DomainEvent> {
-
-  constructor() {
-    MediatZ.register(DomainEvent.prototype, this);
+  HandleEvent(domainEvent: Event1) {
+    console.log(domainEvent);
   }
+}
 
- Handle(domainEvent : DomainEvent): Promise<void> {
-   console.log(domainEvent.message.concat(' hello'));
-   return null;
- }
+@NotificationHandler(Event2)
+class EventHandler2 {
+  HandleEvent(domainEvent: Event2) {
+    console.log(domainEvent);
+  }
+}
 
-}*/
+DomainEvents.Publish(new Event1());
+DomainEvents.Publish(new Event2());
 
-//const handler = new EventHandler();
-//const handler2 = new EventHandler1();
-
-MediatZ.Publish(new DomainEvent());
-MediatZ.Publish(new DomainEvent2());
-
-
-// Write TypeScript code!
-const appDiv: HTMLElement = document.getElementById('app');
-appDiv.innerHTML = `<h1>TypeScript Starter</h1>`;
+//Thanks for watching...github link in the description below...
